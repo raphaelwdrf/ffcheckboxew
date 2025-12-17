@@ -1,10 +1,14 @@
 // ==UserScript==
-// @name         Fast Farming Checkbox Everywhere
-// @namespace    fast-farming-aggrid
-// @version      1.0
-// @match        https://fast.farming-community.eu/*
-// @grant        GM_getValue
-// @grant        GM_setValue
+// @name        Fast Farming Checkbox Everywhere
+// @namespace   https://github.com/raphaelwdrf/ffcheckboxew
+// @description Adds checkbox everywhere on Fast-farming site.
+// @version     1.0
+// @updateURL   https://raw.githubusercontent.com/raphaelwdrf/ffcheckboxew/refs/heads/main/ffCheckBoxEverywhere.user.js
+// @downloadURL https://raw.githubusercontent.com/raphaelwdrf/ffcheckboxew/refs/heads/main/ffCheckBoxEverywhere.user.js
+// @supportURL  https://github.com/raphaelwdrf/ffcheckboxew/issues
+// @match       https://fast.farming-community.eu/*
+// @grant       GM_getValue
+// @grant       GM_setValue
 // ==/UserScript==
 
 (function () {
