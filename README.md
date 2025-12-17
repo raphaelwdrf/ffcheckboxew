@@ -1,2 +1,2 @@
-# ffcheckboxgw2
-Fast.farming-community.eu checkbox userscript
+# ffcheckboxew
+Fast.farming-community.eu checkbox everywhere userscript
