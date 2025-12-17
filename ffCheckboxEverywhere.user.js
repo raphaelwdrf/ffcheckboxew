@@ -9,6 +9,7 @@
 // @match       https://fast.farming-community.eu/*
 // @grant       GM_getValue
 // @grant       GM_setValue
+// @license     MIT
 // ==/UserScript==
 
 (function () {
