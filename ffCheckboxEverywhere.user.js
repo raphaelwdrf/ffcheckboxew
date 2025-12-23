@@ -2,7 +2,7 @@
 // @name        Fast Farming Checkbox Everywhere
 // @namespace   https://github.com/raphaelwdrf/ffcheckboxew
 // @description Adds checkbox everywhere on Fast-farming site.
-// @version     1.0
+// @version     1.1
 // @updateURL   https://raw.githubusercontent.com/raphaelwdrf/ffcheckboxew/refs/heads/main/ffCheckBoxEverywhere.user.js
 // @downloadURL https://raw.githubusercontent.com/raphaelwdrf/ffcheckboxew/refs/heads/main/ffCheckBoxEverywhere.user.js
 // @supportURL  https://github.com/raphaelwdrf/ffcheckboxew/issues
@@ -16,17 +16,11 @@
     'use strict';
 
     const STORAGE_KEY = 'fast_aggrid_checklist_name';
-
-    function loadState() {
-        return GM_getValue(STORAGE_KEY, {});
-    }
-
-    function saveState(state) {
-        GM_setValue(STORAGE_KEY, state);
-    }
+    const PRIORITY_KEY = 'fast_aggrid_priority_name';
 
     function injectCheckboxes() {
-        const state = loadState();
+        const state = GM_getValue(STORAGE_KEY, {});
+        const priorityState = GM_getValue(PRIORITY_KEY, {});
 
         document
             .querySelectorAll('.ag-cell[col-id="Name"] .ag-cell-wrapper')
@@ -48,6 +42,7 @@
 
                 const row = wrapper.closest('.ag-row');
 
+                // Done Checkbox
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.className = 'ff-checkbox';
@@ -55,8 +50,9 @@
 
                 checkbox.style.marginRight = '6px';
                 checkbox.style.cursor = 'pointer';
+                checkbox.style.accentColor = 'rgba(0, 200, 0)';
 
-                // Restore visual state
+                // Restore visual state Done Checkbox
                 if (row && checkbox.checked) {
                     row.style.opacity = '0.5';
                     row.style.backgroundColor = 'rgba(0, 200, 0, 0.25)';
@@ -64,7 +60,7 @@
 
                 checkbox.addEventListener('change', () => {
                     state[nameKey] = checkbox.checked;
-                    saveState(state);
+                    GM_setValue(STORAGE_KEY, state);
 
                     if (row) {
                         row.style.opacity = checkbox.checked ? '0.5' : '';
@@ -72,7 +68,33 @@
                     }
                 });
 
+                //Priority Checkbox
+                const priorityCheckbox = document.createElement('input');
+                priorityCheckbox.type = 'checkbox';
+                priorityCheckbox.className = 'ff-priority-checkbox';
+                priorityCheckbox.checked = !!priorityState[nameKey];
+
+                priorityCheckbox.style.marginRight = '6px';
+                priorityCheckbox.style.cursor = 'pointer';
+                priorityCheckbox.style.accentColor = 'orange';
+
+                // Restore visual state Priority Checkbox
+                if (row && priorityCheckbox.checked) {
+                    row.style.boxShadow = 'inset 8px 0 0 orange';
+                }
+                priorityCheckbox.addEventListener('change', () => {
+                    priorityState[nameKey] = priorityCheckbox.checked;
+                    GM_setValue(PRIORITY_KEY, priorityState);
+
+                    if (row) {
+                        row.style.boxShadow = priorityCheckbox.checked
+                            ? 'inset 8px 0 0 orange'
+                            : '';
+                    }
+                });
+
                 wrapper.prepend(checkbox);
+                wrapper.prepend(priorityCheckbox);
             });
     }
 
@@ -112,10 +134,11 @@
             });
 
             GM_setValue(STORAGE_KEY, state);
+            GM_setValue(PRIORITY_KEY, state);
 
             // Visually uncheck checkboxes on this page
             document
-                .querySelectorAll('.ff-checkbox')
+                .querySelectorAll('input[type="checkbox"].ff-checkbox, input[type="checkbox"].ff-priority-checkbox')
                 .forEach(cb => {
                     cb.checked = false;
 
@@ -123,6 +146,7 @@
                 if (row) {
                     row.style.opacity = '';
                     row.style.backgroundColor = '';
+                    row.style.boxShadow = '';
                 }
             })
 
@@ -152,6 +176,7 @@
             )) return;
 
             GM_setValue(STORAGE_KEY, {});
+            GM_setValue(PRIORITY_KEY, {});
 
             // Visually uncheck checkboxes on this page
             document
@@ -163,6 +188,7 @@
                 if (row) {
                     row.style.opacity = '';
                     row.style.backgroundColor = '';
+                    row.style.boxShadow = '';
                 }
             })
 
