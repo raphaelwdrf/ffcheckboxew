@@ -1,5 +1,17 @@
 ## Changelog
 
+### v1.2
+- Added **separate reset buttons per page**:
+  - One button to reset **Done** items only.
+  - One button to reset **Priority** items only.
+- Added **distinct visual reset actions** for Done and Priority states, ensuring styles are properly cleared.
+- Improved reset UX with **color-coded buttons**:
+  - Green for Done
+  - Orange for Priority
+  - Red for full site reset
+- Refined reset logic to target **only the relevant storage key** per action.
+- Improved clarity and control when managing large checklists with mixed Done and Priority states.
+
 ### v1.1
 - Added a new **Priority checkbox** next to each existing checkbox.
 - Implemented **independent persistence** for priority state using a separate storage key.

@@ -2,7 +2,7 @@
 // @name        Fast Farming Checkbox Everywhere
 // @namespace   https://github.com/raphaelwdrf/ffcheckboxew
 // @description Adds checkbox everywhere on Fast-farming site.
-// @version     1.1
+// @version     1.2
 // @updateURL   https://raw.githubusercontent.com/raphaelwdrf/ffcheckboxew/refs/heads/main/ffCheckBoxEverywhere.user.js
 // @downloadURL https://raw.githubusercontent.com/raphaelwdrf/ffcheckboxew/refs/heads/main/ffCheckBoxEverywhere.user.js
 // @supportURL  https://github.com/raphaelwdrf/ffcheckboxew/issues
@@ -104,13 +104,13 @@
         subtree: true
     });
 
-    // Reset checklist page
-    function addResetButtonPage() {
+    // Reset done checklist page
+    function addResetButtonPageDone() {
 
         const btn = document.createElement('button');
         btn.textContent = '🗑';
 
-        btn.style.background = '#ca8a04';
+        btn.style.background = 'green';
 
         btn.style.position = 'fixed';
         btn.style.bottom = '50px';
@@ -119,7 +119,7 @@
 
         btn.ondblclick = () => {
             if (!confirm(
-                'This will uncheck all items on this page only.\n' +
+                'This will uncheck all done items on this page only.\n' +
                 'This action cannot be undone.\n' +
                 'Continue?'
             )) return;
@@ -134,11 +134,61 @@
             });
 
             GM_setValue(STORAGE_KEY, state);
+
+            // Visually uncheck checkboxes on this page
+            document
+                .querySelectorAll('input[type="checkbox"].ff-checkbox')
+                .forEach(cb => {
+                    cb.checked = false;
+
+                const row = cb.closest('.ag-row');
+                if (row) {
+                    row.style.opacity = '';
+                    row.style.backgroundColor = '';
+                    row.style.boxShadow = '';
+                }
+            })
+
+        };
+
+        document.body.appendChild(btn);
+    }
+
+
+    // Reset priority checklist page
+    function addResetButtonPagePriority() {
+
+        const btn = document.createElement('button');
+        btn.textContent = '🗑';
+
+        btn.style.background = 'orange';
+
+        btn.style.position = 'fixed';
+        btn.style.bottom = '50px';
+        btn.style.right = '50px';
+        btn.style.zIndex = '9999';
+
+        btn.ondblclick = () => {
+            if (!confirm(
+                'This will uncheck all priority items on this page only.\n' +
+                'This action cannot be undone.\n' +
+                'Continue?'
+            )) return;
+
+            const state = GM_getValue(PRIORITY_KEY, {});
+            const pageKey = location.pathname;
+
+            Object.keys(state).forEach(key => {
+                if (key.endsWith(`||${pageKey}`)) {
+                    delete state[key];
+                }
+            });
+
             GM_setValue(PRIORITY_KEY, state);
 
             // Visually uncheck checkboxes on this page
             document
-                .querySelectorAll('input[type="checkbox"].ff-checkbox, input[type="checkbox"].ff-priority-checkbox')
+                .querySelectorAll('input[type="checkbox"].ff-priority-checkbox')
                 .forEach(cb => {
                     cb.checked = false;
 
@@ -161,7 +211,7 @@
         const btn = document.createElement('button');
         btn.textContent = '🗑';
 
-        btn.style.background = '#dc2626';
+        btn.style.background = 'red';
 
         btn.style.position = 'fixed';
         btn.style.bottom = '20px';
@@ -180,7 +230,7 @@
 
             // Visually uncheck checkboxes on this page
             document
-                .querySelectorAll('.ff-checkbox')
+                .querySelectorAll('input[type="checkbox"].ff-checkbox, input[type="checkbox"].ff-priority-checkbox')
                 .forEach(cb => {
                     cb.checked = false;
 
@@ -197,7 +247,8 @@
         document.body.appendChild(btn);
     }
 
-    addResetButtonPage();
+    addResetButtonPageDone();
+    addResetButtonPagePriority();
     addResetButtonSite();
 
 })();
