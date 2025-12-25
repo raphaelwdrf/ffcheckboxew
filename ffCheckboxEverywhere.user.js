@@ -2,7 +2,7 @@
 // @name        Fast Farming Checkbox Everywhere
 // @namespace   https://github.com/raphaelwdrf/ffcheckboxew
 // @description Adds checkbox everywhere on Fast-farming site.
-// @version     1.2
+// @version     1.3
 // @updateURL   https://raw.githubusercontent.com/raphaelwdrf/ffcheckboxew/refs/heads/main/ffCheckBoxEverywhere.user.js
 // @downloadURL https://raw.githubusercontent.com/raphaelwdrf/ffcheckboxew/refs/heads/main/ffCheckBoxEverywhere.user.js
 // @supportURL  https://github.com/raphaelwdrf/ffcheckboxew/issues
@@ -54,8 +54,8 @@
 
                 // Restore visual state Done Checkbox
                 if (row && checkbox.checked) {
-                    row.style.opacity = '0.5';
-                    row.style.backgroundColor = 'rgba(0, 200, 0, 0.25)';
+                    row.style.opacity = '0.3';
+                    //row.style.backgroundColor = 'rgba(0, 200, 0, 0.25)';
                 }
 
                 checkbox.addEventListener('change', () => {
@@ -63,8 +63,8 @@
                     GM_setValue(STORAGE_KEY, state);
 
                     if (row) {
-                        row.style.opacity = checkbox.checked ? '0.5' : '';
-                        row.style.backgroundColor = checkbox.checked ? 'rgba(0, 200, 0, 0.25)' : '';
+                        row.style.opacity = checkbox.checked ? '0.3' : '';
+                        //row.style.backgroundColor = checkbox.checked ? 'rgba(0, 200, 0, 0.25)' : '';
                     }
                 });
 
@@ -80,15 +80,19 @@
 
                 // Restore visual state Priority Checkbox
                 if (row && priorityCheckbox.checked) {
-                    row.style.boxShadow = 'inset 8px 0 0 orange';
+                    //row.style.boxShadow = 'inset 8px 0 0 orange';
+                    row.style.textShadow = '0 0 10px orange';
                 }
                 priorityCheckbox.addEventListener('change', () => {
                     priorityState[nameKey] = priorityCheckbox.checked;
                     GM_setValue(PRIORITY_KEY, priorityState);
 
                     if (row) {
-                        row.style.boxShadow = priorityCheckbox.checked
+                        /*row.style.boxShadow = priorityCheckbox.checked
                             ? 'inset 8px 0 0 orange'
+                            : '';*/
+                        row.style.textShadow = priorityCheckbox.checked
+                            ? '0 0 10px orange'
                             : '';
                     }
                 });
@@ -144,8 +148,7 @@
                 const row = cb.closest('.ag-row');
                 if (row) {
                     row.style.opacity = '';
-                    row.style.backgroundColor = '';
-                    row.style.boxShadow = '';
+                    //row.style.textShadow = '';
                 }
             })
 
@@ -194,9 +197,8 @@
 
                 const row = cb.closest('.ag-row');
                 if (row) {
-                    row.style.opacity = '';
-                    row.style.backgroundColor = '';
-                    row.style.boxShadow = '';
+                    //row.style.opacity = '';
+                    row.style.textShadow = '';
                 }
             })
 
@@ -237,8 +239,7 @@
                 const row = cb.closest('.ag-row');
                 if (row) {
                     row.style.opacity = '';
-                    row.style.backgroundColor = '';
-                    row.style.boxShadow = '';
+                    row.style.textShadow = '';
                 }
             })
 

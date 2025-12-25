@@ -1,5 +1,9 @@
 ## Changelog
 
+### v1.3
+- Reduced visual impact of “Done” items (lower opacity instead of background color).
+- Changed Priority highlight from left border to orange text glow.
+
 ### v1.2
 - Added **separate reset buttons per page**:
   - One button to reset **Done** items only.
