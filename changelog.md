@@ -1,5 +1,9 @@
 ## Changelog
 
+### v1.4
+- Disabled native table checkboxes.
+- Updated visual for Done and Priority reaction.
+
 ### v1.3
 - Reduced visual impact of “Done” items (lower opacity instead of background color).
 - Changed Priority highlight from left border to orange text glow.

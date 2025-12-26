@@ -2,19 +2,93 @@
 // @name        Fast Farming Checkbox Everywhere
 // @namespace   https://github.com/raphaelwdrf/ffcheckboxew
 // @description Adds checkbox everywhere on Fast-farming site.
-// @version     1.3
-// @updateURL   https://raw.githubusercontent.com/raphaelwdrf/ffcheckboxew/refs/heads/main/ffCheckBoxEverywhere.user.js
-// @downloadURL https://raw.githubusercontent.com/raphaelwdrf/ffcheckboxew/refs/heads/main/ffCheckBoxEverywhere.user.js
+// @version     1.4
 // @supportURL  https://github.com/raphaelwdrf/ffcheckboxew/issues
 // @match       https://fast.farming-community.eu/*
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @license     MIT
+// @downloadURL https://update.greasyfork.org/scripts/559259/Fast%20Farming%20Checkbox%20Everywhere.user.js
+// @updateURL https://update.greasyfork.org/scripts/559259/Fast%20Farming%20Checkbox%20Everywhere.meta.js
 // ==/UserScript==
 
 (function () {
     'use strict';
 
+    //Start: Disable native checkbox
+    function disableCheckboxTable(gridRoot) {
+        // Detect real AG Grid checkbox presence
+        if (!gridRoot.querySelector('.ag-selection-checkbox')) return;
+
+        gridRoot.querySelectorAll('input.ag-checkbox-input').forEach(el => {
+            if (el.dataset.ffCustom) return; // ← protects your script
+            el.checked = false;
+            el.disabled = true;
+            el.style.pointerEvents = 'none';
+            el.closest('.ag-selection-checkbox')?.remove();
+        });
+
+        /* 1️⃣ Remove checkbox column interaction */
+        gridRoot.querySelectorAll(
+            '.ag-selection-checkbox input.ag-checkbox-input'
+        ).forEach(el => {
+            el.checked = false;
+            el.disabled = true;
+            el.style.pointerEvents = 'none';
+            el.style.display = 'none';
+        });
+
+        /* 2️⃣ Kill row selection state */
+        gridRoot.querySelectorAll('.ag-row').forEach(row => {
+            row.classList.remove('ag-row-selected');
+            row.setAttribute('aria-selected', 'false');
+        });
+
+        /* 3️⃣ Block future selection (capture phase) */
+        gridRoot.addEventListener('mousedown', e => {
+            if (
+                e.target.closest('.ag-selection-checkbox') ||
+                e.target.closest('.ag-row')
+            ) {
+                e.stopImmediatePropagation();
+            }
+        }, true);
+
+        gridRoot.addEventListener('mousedown', e => {
+            if (e.target.closest('.ag-selection-checkbox')) {
+                e.stopImmediatePropagation();
+            }
+        }, true);
+
+        /* 4️⃣ Defensive cleanup (AG Grid re-applies state) */
+        const observer = new MutationObserver(() => {
+            gridRoot.querySelectorAll('.ag-row-selected').forEach(row => {
+                row.classList.remove('ag-row-selected');
+                row.setAttribute('aria-selected', 'false');
+            });
+        });
+
+        observer.observe(gridRoot, {
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['class', 'aria-selected']
+        });
+    }
+
+    function scan() {
+        document.querySelectorAll('.ag-root').forEach(disableCheckboxTable);
+    }
+
+    scan();
+
+    const globalObserver = new MutationObserver(scan);
+    globalObserver.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+
+
+    //Start: Create checkboxes
     const STORAGE_KEY = 'fast_aggrid_checklist_name';
     const PRIORITY_KEY = 'fast_aggrid_priority_name';
 
@@ -44,18 +118,19 @@
 
                 // Done Checkbox
                 const checkbox = document.createElement('input');
+                checkbox.dataset.ffCustom = 'true';
                 checkbox.type = 'checkbox';
                 checkbox.className = 'ff-checkbox';
                 checkbox.checked = !!state[nameKey];
 
                 checkbox.style.marginRight = '6px';
                 checkbox.style.cursor = 'pointer';
-                checkbox.style.accentColor = 'rgba(0, 200, 0)';
+                checkbox.style.accentColor = 'rgba(0, 255, 0)';
 
                 // Restore visual state Done Checkbox
                 if (row && checkbox.checked) {
-                    row.style.opacity = '0.3';
-                    //row.style.backgroundColor = 'rgba(0, 200, 0, 0.25)';
+                    row.style.opacity = '0.5';
+                    row.style.backgroundColor = 'rgba(0, 255, 0, 0.1)';
                 }
 
                 checkbox.addEventListener('change', () => {
@@ -63,13 +138,14 @@
                     GM_setValue(STORAGE_KEY, state);
 
                     if (row) {
-                        row.style.opacity = checkbox.checked ? '0.3' : '';
-                        //row.style.backgroundColor = checkbox.checked ? 'rgba(0, 200, 0, 0.25)' : '';
+                        row.style.opacity = checkbox.checked ? '0.5' : '';
+                        row.style.backgroundColor = checkbox.checked ? 'rgba(0, 255, 0, 0.1)' : '';
                     }
                 });
 
                 //Priority Checkbox
                 const priorityCheckbox = document.createElement('input');
+                priorityCheckbox.dataset.ffCustom = 'true';
                 priorityCheckbox.type = 'checkbox';
                 priorityCheckbox.className = 'ff-priority-checkbox';
                 priorityCheckbox.checked = !!priorityState[nameKey];
@@ -80,7 +156,7 @@
 
                 // Restore visual state Priority Checkbox
                 if (row && priorityCheckbox.checked) {
-                    //row.style.boxShadow = 'inset 8px 0 0 orange';
+                    row.style.boxShadow = 'inset 8px 0 0 orange';
                     row.style.textShadow = '0 0 10px orange';
                 }
                 priorityCheckbox.addEventListener('change', () => {
@@ -88,12 +164,8 @@
                     GM_setValue(PRIORITY_KEY, priorityState);
 
                     if (row) {
-                        /*row.style.boxShadow = priorityCheckbox.checked
-                            ? 'inset 8px 0 0 orange'
-                            : '';*/
-                        row.style.textShadow = priorityCheckbox.checked
-                            ? '0 0 10px orange'
-                            : '';
+                        row.style.boxShadow = priorityCheckbox.checked ? 'inset 8px 0 0 orange' : '';
+                        row.style.textShadow = priorityCheckbox.checked ? '0 0 10px orange' : '';
                     }
                 });
 
@@ -148,7 +220,9 @@
                 const row = cb.closest('.ag-row');
                 if (row) {
                     row.style.opacity = '';
+                    row.style.backgroundColor = '';
                     //row.style.textShadow = '';
+                    //row.style.boxShadow = '';
                 }
             })
 
@@ -198,7 +272,9 @@
                 const row = cb.closest('.ag-row');
                 if (row) {
                     //row.style.opacity = '';
+                    //row.style.backgroundColor = '';
                     row.style.textShadow = '';
+                    row.style.boxShadow = '';
                 }
             })
 
@@ -239,7 +315,9 @@
                 const row = cb.closest('.ag-row');
                 if (row) {
                     row.style.opacity = '';
+                    row.style.backgroundColor = '';
                     row.style.textShadow = '';
+                    row.style.boxShadow = '';
                 }
             })
 
